@@ -12,6 +12,11 @@ class BaseAPIException(HTTPException):
         )
 
 
+
+class NotFoundAPIException(BaseAPIException):
+    status_code: int = status.HTTP_404_NOT_FOUND
+    detail: str = "Not Found"
+
 class UserAlreadyExistsException(BaseAPIException):
     status_code: int = status.HTTP_409_CONFLICT
     detail: str = "User already exists"

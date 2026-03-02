@@ -4,9 +4,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.database import async_session_maker
 from sqlalchemy import select, insert
 
-
-
-
 class BaseDao:
     model = None
 
