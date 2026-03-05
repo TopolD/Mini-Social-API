@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends
 from starlette.responses import JSONResponse
 
-from app.Public.dao import PublicDao, LikeDao
+from app.Public.dao import PublicDao
 from app.Public.schemas import PublicUpdateS
 from app.exceptions import NotFoundAPIException
 from app.users.dependencies import get_current_user
@@ -16,8 +16,8 @@ router = APIRouter(
 
 
 @router.get("/get_posts")
-async def get_posts(user: Users = Depends(get_current_user)):
-    posts = await PublicDao.find_all(owner_id=user.id)
+async def get_posts(limit:int,offset:int):
+    posts = await PublicDao.get_post(limit,offset)
     return posts
 
 

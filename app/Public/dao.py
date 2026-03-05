@@ -39,3 +39,11 @@ class PublicDao(BaseDao):
 
             result = await session.execute(query)
             return result.scalar()
+
+    @classmethod
+    async def get_post(cls, limit: int, offset: int):
+        async with AsyncSession() as session:
+            query = select(Publics).limit(10).offset(0).order_by(Publics.id.desc())
+
+            result = await session.execute(query)
+            return result.scalars().all()
