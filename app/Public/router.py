@@ -45,12 +45,13 @@ async def create_posts(title: str, content: str, user: Users = Depends(get_curre
 @router.get("/get_post/{id}")
 async def get_post(id: int, user=Depends(get_current_user)):
     post = await PublicDao.find_post_by_id(id)
+    count_like = await PublicDao.get_len_like(id)
     if not post:
         raise NotFoundAPIException()
     return JSONResponse(
         content={
             "author": {user.id, user.email},
-            "likes_count":len(post.like_by),
+            "likes_count": count_like,
         })
 
 
