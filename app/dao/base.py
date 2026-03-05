@@ -49,7 +49,20 @@ class BaseDao:
                 await session.commit()
         except (SQLAlchemyError, Exception) as e:
             if isinstance(e, SQLAlchemyError):
-                msg = "Database Exc: Cannot add booking"
+                msg = f"Database Exc: Cannot add {data}"
             elif isinstance(e, Exception):
-                msg = "Unknown Exc: Cannot add booking"
+                msg = f"Unknown Exc: Cannot add {data}"
             # log.error(msg, exc_info=True)
+
+    @classmethod
+    async def update(cls, **data):
+        try:
+            async with async_session_maker() as session:
+                query = insert(cls.model).values(**data)
+                await session.execute(query)
+                await session.commit()
+        except (SQLAlchemyError, Exception) as e:
+            if isinstance(e, SQLAlchemyError):
+                msg = f"Database Exc: Cannot update {cls.model}"
+            elif isinstance(e, Exception):
+                msg = f"Unknown Exc: Cannot update {cls.model}"
