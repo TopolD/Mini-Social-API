@@ -3,8 +3,9 @@ import asyncio
 import pytest
 import json
 
+
 from sqlalchemy import insert
-from datetime import datetime
+
 
 from app.config import settings
 from app.database import Base,async_session_maker,engine
@@ -13,8 +14,6 @@ from app.main import app as fastapi_app
 from app.users.models import Users
 
 
-
-from fastapi.testclient import TestClient
 from httpx import AsyncClient,ASGITransport
 
 
@@ -37,9 +36,7 @@ async def repare_database():
 
     async with async_session_maker() as session:
         for Model, values in [
-
             (Users, users),
-
         ]:
             query = insert(Model).values(values)
             await session.execute(query)

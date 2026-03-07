@@ -10,7 +10,7 @@ likes = Table(
     "likes",
     Base.metadata,
     Base.metadata,
-    Column("public_id", Integer, ForeignKey("publics.id")),
+    Column("public_id", Integer, ForeignKey("public.id")),
     Column("user_id", Integer, ForeignKey("users.id")),
 
 )

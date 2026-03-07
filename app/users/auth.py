@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 
-
 from jose import jwt
 from passlib.context import CryptContext
 
@@ -8,7 +7,7 @@ from app.config import settings
 from app.users.dao import UsersDao
 
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 
 def get_password_hash(password: str) -> str:
