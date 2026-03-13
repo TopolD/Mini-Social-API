@@ -12,18 +12,20 @@ class BaseAPIException(HTTPException):
         )
 
 
-
 class NotFoundAPIException(BaseAPIException):
     status_code: int = status.HTTP_404_NOT_FOUND
     detail: str = "Not Found"
+
 
 class UserAlreadyExistsException(BaseAPIException):
     status_code: int = status.HTTP_409_CONFLICT
     detail: str = "User already exists"
 
+
 class IncorrectEmailOrPasswordException(BaseAPIException):
     status_code: int = status.HTTP_400_BAD_REQUEST
     detail: str = "Incorrect email or password"
+
 
 class TokenExpiredException(BaseAPIException):
     status_code = status.HTTP_401_UNAUTHORIZED
@@ -43,5 +45,3 @@ class IncorrectTokenFormatException(BaseAPIException):
 class UserIsNotPresentException(BaseAPIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     detail = "Пользователь не найден"
-
-

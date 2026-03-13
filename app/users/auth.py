@@ -6,7 +6,6 @@ from passlib.context import CryptContext
 from app.config import settings
 from app.users.dao import UsersDao
 
-
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 
@@ -23,34 +22,40 @@ def create_token(data: dict, secret_key: str, expiration_time: timedelta) -> str
         to_encode = data.copy()
         expire = datetime.now(timezone.utc) + expiration_time
         to_encode.update({"exp": expire})
-        encoded_jwt = jwt.encode(
-            to_encode, secret_key, algorithm=settings.ALGORITHM
-        )
+        encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=settings.ALGORITHM)
         return encoded_jwt
     except Exception as e:
-        msg = "Failed to create token"
+        pass
         # log.error(msg,exc_info=True)
 
+
 def create_access_token(data: dict) -> str:
-    return create_token(data, settings.SECRET_KEY_ACCESS, timedelta(minutes=settings.ACCESS_TIME_TOKEN))
+    return create_token(
+        data, settings.SECRET_KEY_ACCESS, timedelta(minutes=settings.ACCESS_TIME_TOKEN)
+    )
 
 
 def create_refresh_token(data: dict) -> str:
-    return create_token(data, settings.SECRET_KEY_REFRESH, timedelta(days=settings.REFRESH_TOKEN_EXPIRATION))
+    return create_token(
+        data,
+        settings.SECRET_KEY_REFRESH,
+        timedelta(days=settings.REFRESH_TOKEN_EXPIRATION),
+    )
 
 
+async def authenticate_user(email, password):
+    # try:
+    user = await UsersDao.find_one_or_none(email=email)
+
+    if not user and not verify_password(password, user.password):
+        return None
+    return user
 
 
-async def authenticate_user(email, password: str):
-    try:
-        user = await UsersDao.find_one_or_none(email=email)
-        if not user and not verify_password(password, user.password):
-            return None
-        return user
-    except Exception as e:
-        msg = "User not found"
-        extra = {
-            "email": email,
-        }
+# except Exception as e:
+#     msg = "User not found"
+#     extra = {
+#         "email": email,
+#     }
 
-        # log.error(msg, extra=extra,extra_info=extra)
+# log.error(msg, extra=extra,extra_info=extra)

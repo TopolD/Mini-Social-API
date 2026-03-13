@@ -1,8 +1,8 @@
-from fastapi import HTTPException
-from pydantic import BaseModel, EmailStr, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class SUserAuth(BaseModel):
+
     email: EmailStr
     password: str
 

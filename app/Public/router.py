@@ -1,71 +1,73 @@
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends
-from starlette.responses import JSONResponse
 
-from app.Public.dao import PublicDao
-from app.Public.schemas import PublicUpdateS
 from app.exceptions import NotFoundAPIException
+from app.Public.dao import PublicDao
+from app.Public.schemas import PublicSchema, PublicUpdateS
 from app.users.dependencies import get_current_user
 from app.users.models import Users
 
-router = APIRouter(
-    prefix="/posts",
-    tags=["posts"]
-)
-
-
-@router.get("/get_posts")
-async def get_posts(limit:int,offset:int):
-    posts = await PublicDao.get_post(limit,offset)
-    return posts
+router = APIRouter(prefix="/posts", tags=["posts"])
 
 
 @router.post("/create")
-async def create_posts(title: str, content: str, user: Users = Depends(get_current_user)):
+async def create_posts(public: PublicSchema, user: Users = Depends(get_current_user)):
     """
 
     create a new post
 
-    :param title:
-    :param content:
-    :param user:
-    :return: new_posts
+    :param public
+    :return: None
     """
-    new_posts = await PublicDao.add(
-        title=title,
-        content=content,
-        owner_id=user.id,
-        created_at=datetime.now(timezone.utc)
+
+    await PublicDao.add(
+        title=public.title,
+        content=public.content,
+        author_id=user.id,
+        created_at=datetime.now(timezone.utc),
     )
 
-    return new_posts
+@router.get("/get_posts{author_id}/")
+async def get_posts_by_filter(author_id: str, title: str, content:str):
+
+@router.get("/get_posts")
+async def get_posts(limit: int, offset: int,suppression:bool):
+    posts = await PublicDao.get_post(limit, offset,suppression)
+    return posts
 
 
-@router.get("/get_post/{id}")
+
+
+@router.get("/answer/{id}")
 async def get_post(id: int, user=Depends(get_current_user)):
-    post = await PublicDao.find_post_by_id(id)
-    count_like = await PublicDao.get_len_like(id)
+    post = await PublicDao.get_count_like_by_post_id(id, user.id)
+
     if not post:
         raise NotFoundAPIException()
-    return JSONResponse(
+    return dict(
         content={
             "author": {user.id, user.email},
-            "likes_count": count_like,
-        })
+            "likes_count": post,
+        }
+    )
+
+
+@router.post("/like/{id}")
+async def like_post(id: int, user: Users = Depends(get_current_user)):
+    await PublicDao.set_like_by_post(id, user.id)
 
 
 @router.patch("/update/{id}")
-async def update_post(id: int, public: PublicUpdateS, user: Users = Depends(get_current_user)):
-    data_for_update = public.model_dump(exclude_unset=True)
-    update_res = await PublicDao.update_public(id, user, data_for_update)
-    if not update_res:
-        raise NotFoundAPIException()
+async def update_post(
+    id: int, public: PublicUpdateS, user: Users = Depends(get_current_user)
+):
+    data_for_update = public.model_dump(exclude_unset=True, exclude_none=True)
+    await PublicDao.update_posts(id, user.id, data_for_update)
+
     return True
 
 
-@router.delete("/delete/{id}")
+@router.delete("/{id}")
 async def delete_post(id: int, user: Users = Depends(get_current_user)):
-    target_posts = await PublicDao.delete_post(id, user.id)
-    if not target_posts:
-        raise NotFoundAPIException()
+    await PublicDao.delete_post(id, user.id)

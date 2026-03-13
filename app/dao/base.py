@@ -1,8 +1,9 @@
+from sqlalchemy import insert, select
 from sqlalchemy.exc import SQLAlchemyError
 
-
 from app.database import async_session_maker
-from sqlalchemy import select, insert
+from app.logger import log
+
 
 class BaseDao:
     model = None
@@ -42,17 +43,20 @@ class BaseDao:
 
     @classmethod
     async def add(cls, **data):
+
         try:
+
             async with async_session_maker() as session:
                 query = insert(cls.model).values(**data)
                 await session.execute(query)
                 await session.commit()
         except (SQLAlchemyError, Exception) as e:
+            print(e)
             if isinstance(e, SQLAlchemyError):
                 msg = f"Database Exc: Cannot add {data}"
             elif isinstance(e, Exception):
                 msg = f"Unknown Exc: Cannot add {data}"
-            # log.error(msg, exc_info=True)
+            log.error(msg, exc_info=True)
 
     @classmethod
     async def update(cls, **data):
@@ -66,3 +70,4 @@ class BaseDao:
                 msg = f"Database Exc: Cannot update {cls.model}"
             elif isinstance(e, Exception):
                 msg = f"Unknown Exc: Cannot update {cls.model}"
+            log.error(msg, exc_info=True)

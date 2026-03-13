@@ -1,17 +1,16 @@
 from fastapi import APIRouter, Response
-from fastapi.params import Depends
 
-from app.users.auth import get_password_hash, authenticate_user, create_access_token, create_refresh_token
-from app.users.dao import UsersDao
-from app.users.dependencies import get_current_user
-from app.users.schemas import SUserAuth
-from app.users.models import Users
-from app.exceptions import IncorrectTokenFormatException, IncorrectEmailOrPasswordException, UserAlreadyExistsException
-
-router = APIRouter(
-    prefix="/auth",
-    tags=["Auth "]
+from app.exceptions import IncorrectEmailOrPasswordException, UserAlreadyExistsException
+from app.users.auth import (
+    authenticate_user,
+    create_access_token,
+    create_refresh_token,
+    get_password_hash,
 )
+from app.users.dao import UsersDao
+from app.users.schemas import SUserAuth
+
+router = APIRouter(prefix="/auth", tags=["Auth "])
 
 
 @router.post(
@@ -19,8 +18,8 @@ router = APIRouter(
     responses={
         200: {"description": "Зареіструвався"},
         400: {"description": "Невалідні дані"},
-        409: {"description": "Такий користувач вже існує"}
-    }
+        409: {"description": "Такий користувач вже існує"},
+    },
 )
 async def register_user(user_data: SUserAuth):
     """
@@ -36,16 +35,13 @@ async def register_user(user_data: SUserAuth):
     await UsersDao.add(email=user_data.email, hashed_password=hashed_password)
 
 
-
-
-
 @router.post(
     "/login",
     response_model=str,
     responses={
         200: {"description": "Успішний вхід"},
         # 400: {"description": "Невалідні дані"},
-    }
+    },
 )
 async def login_user(response: Response, user_data: SUserAuth) -> str:
     """
@@ -56,10 +52,13 @@ async def login_user(response: Response, user_data: SUserAuth) -> str:
     """
 
     user = await authenticate_user(user_data.email, user_data.password)
+
     if not user:
         raise IncorrectEmailOrPasswordException()
     refresh_token = create_refresh_token({"sub": str(user.id)})
-    response.set_cookie("token", value=refresh_token, httponly=True, secure=True, samesite="strict")
+    response.set_cookie(
+        "token", value=refresh_token, httponly=True, secure=True, samesite="strict"
+    )
 
     access_token = create_access_token({"sub": str(user.id)})
 
@@ -70,11 +69,10 @@ async def login_user(response: Response, user_data: SUserAuth) -> str:
     "/logout",
     responses={
         200: {"description": "Успішний вихід"},
-    }
+    },
 )
 def logout_user(
-        response: Response,
-
+    response: Response,
 ) -> dict:
     """
 
@@ -83,6 +81,4 @@ def logout_user(
     """
 
     response.delete_cookie("token")
-    return dict(
-        message="Logged out successfully"
-    )
+    return dict(message="Logged out successfully")
