@@ -4,7 +4,14 @@ from fastapi import APIRouter, Depends
 
 from app.exceptions import NotFoundAPIException
 from app.Public.dao import PublicDao
-from app.Public.schemas import PublicSchema, PublicUpdateS
+from app.Public.schemas import (
+    OrderField,
+    PublicSchema,
+    PublicUpdateS,
+    SearchS,
+    SortField,
+)
+from app.Public.services import GetPostsByFilter
 from app.users.dependencies import get_current_user
 from app.users.models import Users
 
@@ -28,15 +35,26 @@ async def create_posts(public: PublicSchema, user: Users = Depends(get_current_u
         created_at=datetime.now(timezone.utc),
     )
 
-@router.get("/get_posts{author_id}/")
-async def get_posts_by_filter(author_id: str, title: str, content:str):
+
+@router.get("/{author_id}")
+async def get_posts_by_filter(
+    search: SearchS, author_id, sort: SortField, order: OrderField = OrderField.desc
+):
+    """
+    get all posts for filter
+    :param search:
+    :param author_id:
+    :param sort:
+    :param order:
+    :return: posts
+    """
+    return await GetPostsByFilter.get_post(author_id, search, sort, order)
+
 
 @router.get("/get_posts")
-async def get_posts(limit: int, offset: int,suppression:bool):
-    posts = await PublicDao.get_post(limit, offset,suppression)
+async def get_posts(limit: int, offset: int, suppression: bool):
+    posts = await PublicDao.get_post(limit, offset, suppression)
     return posts
-
-
 
 
 @router.get("/answer/{id}")

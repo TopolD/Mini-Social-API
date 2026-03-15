@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Response
 
-from app.exceptions import IncorrectEmailOrPasswordException, UserAlreadyExistsException
+from app.Exceptions.Api import (
+    IncorrectEmailOrPasswordException,
+    UserAlreadyExistsException,
+)
 from app.users.auth import (
     authenticate_user,
     create_access_token,
@@ -40,7 +43,6 @@ async def register_user(user_data: SUserAuth):
     response_model=str,
     responses={
         200: {"description": "Успішний вхід"},
-        # 400: {"description": "Невалідні дані"},
     },
 )
 async def login_user(response: Response, user_data: SUserAuth) -> str:

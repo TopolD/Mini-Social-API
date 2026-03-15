@@ -1,4 +1,4 @@
-from sqlalchemy import and_, func, select, update
+from sqlalchemy import and_, asc, desc, func, select, update
 from sqlalchemy.dialects.postgresql import insert as pq_insert
 
 from app.dao.base import BaseDao
@@ -54,7 +54,6 @@ class PublicDao(BaseDao):
                 .select_from(Likes)
                 .join(Publics, Likes.c.public_id == Publics.id)
                 .where(and_(Publics.id == id, Publics.author_id == user_id))
-                .group_by(Publics.id)
             )
             result = await session.execute(query)
             return result.scalar()
@@ -72,3 +71,32 @@ class PublicDao(BaseDao):
             )
             await session.execute(query)
             await session.commit()
+
+    @classmethod
+    async def get_post_by_filters(cls, author_id, sort, order, title, content):
+        async with async_session_maker() as session:
+
+            like_count = func.count(Likes.c.user_id).label("like_count")
+
+            sort_fields = {"created_at": Publics.created_at, "like_count": like_count}
+
+            query = (
+                select(Publics, like_count)
+                .join(Likes, Publics.id == Likes.c.public_id)
+                .where(
+                    and_(
+                        Publics.author_id == author_id,
+                        Publics.title == title,
+                        Publics.content.ilike(f"%{content}%"),
+                    )
+                )
+                .group_by(Publics.id)
+            )
+
+            if order == "desc":
+                query.order_by(desc(sort_fields[sort]))
+            else:
+                query.order_by(asc(sort_fields[sort]))
+            result = await session.execute(query)
+
+            return result.scalars().all()

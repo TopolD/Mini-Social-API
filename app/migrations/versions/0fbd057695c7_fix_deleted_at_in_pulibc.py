@@ -6,7 +6,6 @@ Create Date: 2026-03-13 14:44:58.810671
 
 """
 
-from typing import Union
 from collections.abc import Sequence
 
 # revision identifiers, used by Alembic.

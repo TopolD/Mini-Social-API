@@ -34,3 +34,14 @@ async def test_get_public_with_db_by_id(id: int, user_id: int):
 @pytest.mark.parametrize("id,user_id", [(1, 1)])
 async def test_set_like_by_post(id: int, user_id: int):
     await PublicDao.set_like_by_post(id, user_id)
+
+
+@pytest.mark.parametrize(
+    "author_id,sort,order,title,content",
+    [
+        (1, "created_at", "desc", "dogs", "are"),
+        (2, "like_count", "asc", "coffee", "in the morning"),
+    ],
+)
+async def test_get_posts_by_filter(author_id, sort, order, title, content):
+    await PublicDao.get_post_by_filters(author_id, sort, order, title, content)

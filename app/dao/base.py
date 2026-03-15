@@ -2,6 +2,7 @@ from sqlalchemy import insert, select
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.database import async_session_maker
+from app.Exceptions.database import NotAddData, NotFindData, NotUpdateData
 from app.logger import log
 
 
@@ -15,9 +16,14 @@ class BaseDao:
                 query = select(cls.model.__table__.columns).filter_by(**filter_by)
                 result = await session.execute(query)
                 return result.mappings().all()
-        except (SQLAlchemyError, Exception) as e:
-            pass
-            # await ExceptionFindData(e)
+
+        except SQLAlchemyError as e:
+            log.error(e, exc_info=True)
+            raise NotFindData() from e
+
+        except Exception as e:
+            log.error(e, exc_info=True)
+            raise
 
     @classmethod
     async def find_by_id(cls, id):
@@ -26,9 +32,14 @@ class BaseDao:
                 query = select(cls.model).filter_by(id=id)
                 result = await session.execute(query)
                 return result.scalar_one_or_none()
-        except (SQLAlchemyError, Exception) as e:
-            pass
-            # await ExceptionFindData(e)
+
+        except SQLAlchemyError as e:
+            log.error(e, exc_info=True)
+            raise NotFindData() from e
+
+        except Exception as e:
+            log.error(e, exc_info=True)
+            raise
 
     @classmethod
     async def find_one_or_none(cls, **filter_by):
@@ -37,9 +48,14 @@ class BaseDao:
                 query = select(cls.model).filter_by(**filter_by)
                 result = await session.execute(query)
                 return result.scalar_one_or_none()
-        except (SQLAlchemyError, Exception) as e:
-            pass
-            # await ExceptionFindData(e)
+
+        except SQLAlchemyError as e:
+            log.error(e, exc_info=True)
+            raise NotFindData() from e
+
+        except Exception as e:
+            log.error(e, exc_info=True)
+            raise
 
     @classmethod
     async def add(cls, **data):
@@ -50,13 +66,14 @@ class BaseDao:
                 query = insert(cls.model).values(**data)
                 await session.execute(query)
                 await session.commit()
-        except (SQLAlchemyError, Exception) as e:
-            print(e)
-            if isinstance(e, SQLAlchemyError):
-                msg = f"Database Exc: Cannot add {data}"
-            elif isinstance(e, Exception):
-                msg = f"Unknown Exc: Cannot add {data}"
-            log.error(msg, exc_info=True)
+
+        except SQLAlchemyError as e:
+            log.error(e, exc_info=True)
+            raise NotAddData() from e
+
+        except Exception as e:
+            log.error(e, exc_info=True)
+            raise
 
     @classmethod
     async def update(cls, **data):
@@ -65,9 +82,10 @@ class BaseDao:
                 query = insert(cls.model).values(**data)
                 await session.execute(query)
                 await session.commit()
-        except (SQLAlchemyError, Exception) as e:
-            if isinstance(e, SQLAlchemyError):
-                msg = f"Database Exc: Cannot update {cls.model}"
-            elif isinstance(e, Exception):
-                msg = f"Unknown Exc: Cannot update {cls.model}"
-            log.error(msg, exc_info=True)
+        except SQLAlchemyError as e:
+            log.error(e, exc_info=True)
+            raise NotUpdateData() from e
+
+        except Exception as e:
+            log.error(e, exc_info=True)
+            raise

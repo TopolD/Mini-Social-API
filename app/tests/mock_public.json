@@ -2,13 +2,61 @@
     {
         "title": "dogs",
         "content": "dogs are cute",
-        "created_at":"2026-03-09",
+        "created_at": "2026-03-09",
         "author_id": 1
     },
     {
         "title": "games",
         "content": "games are cool",
         "created_at": "2026-03-09",
+        "author_id": 1
+    },
+    {
+        "title": "cats",
+        "content": "cats love to nap all day",
+        "created_at": "2026-03-10",
+        "author_id": 2
+    },
+    {
+        "title": "music",
+        "content": "listening to classical music relaxes me",
+        "created_at": "2026-03-11",
+        "author_id": 1
+    },
+    {
+        "title": "coffee",
+        "content": "coffee in the morning boosts energy",
+        "created_at": "2026-03-11",
+        "author_id": 2
+    },
+    {
+        "title": "books",
+        "content": "reading fantasy novels is fun",
+        "created_at": "2026-03-12",
+        "author_id": 1
+    },
+    {
+        "title": "coding",
+        "content": "solving coding challenges improves skills",
+        "created_at": "2026-03-12",
+        "author_id": 2
+    },
+    {
+        "title": "travel",
+        "content": "traveling opens your mind",
+        "created_at": "2026-03-13",
+        "author_id": 1
+    },
+    {
+        "title": "movies",
+        "content": "watching movies is a good way to relax",
+        "created_at": "2026-03-13",
+        "author_id": 2
+    },
+    {
+        "title": "sports",
+        "content": "playing sports keeps you healthy",
+        "created_at": "2026-03-14",
         "author_id": 1
     }
 ]

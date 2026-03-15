@@ -25,7 +25,7 @@ async def test_create_like(id, authenticated_ac: AsyncClient):
 
 @pytest.mark.parametrize("id", ["1"])
 async def test_get_like_by_post(id, authenticated_ac: AsyncClient):
-    response = await authenticated_ac.get(f"/posts/get_post/{id}")
+    response = await authenticated_ac.get(f"/posts/answer/{id}")
 
     assert response.status_code == 200
 
