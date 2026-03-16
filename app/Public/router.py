@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends
 
-from app.exceptions import NotFoundAPIException
+from app.Exceptions.Api import NotFoundAPIException
 from app.Public.dao import PublicDao
 from app.Public.schemas import (
     OrderField,

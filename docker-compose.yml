@@ -1,16 +1,16 @@
 services:
 
+
   db:
     image: postgres:16
-    container_name: public_db
     volumes:
       - postgresdata:/var/lib/postgresql/data
     env_file:
-      - .env
+      - .env-non-dev
     ports:
-      - "5400:5432"
+      - "5432:5432"
     healthcheck:
-      test: ["CMD","pq_isready","-U","postgres"]
+      test: ["CMD","pg_isready","-U","postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -18,16 +18,15 @@ services:
   public:
     build:
       context: .
-    container_name: public_app
     ports:
       - "8080:8080"
     env_file:
-      - .env
+      - .env-non-dev
     depends_on:
       db:
         condition: service_healthy
     command:
-      sh -c "sleep 5 && alembic upgrade head && gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000"
+      sh -c " gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8080"
 
 
 volumes:

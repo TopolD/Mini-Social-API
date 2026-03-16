@@ -32,7 +32,7 @@ A Social api  where users can create posts and send likes for those  posts
 2. Copy a virtual en_example
 3. Start with Docker:
    ```bash
-      docker compose -f docker-compose.yml up --build -d
+      docker compose up --build -d
    ```
 
 ---
