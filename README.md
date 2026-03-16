@@ -29,8 +29,12 @@ A Social api  where users can create posts and send likes for those  posts
 ## How start
 
 1. Clone project with GitHub
-2. Copy a virtual en_example
-3. Start with Docker:
+2. copy requiremens.txt
+   ```bash
+      pip install -r requirements.txt
+   ```
+3. Copy a virtual en_example
+4. Start with Docker:
    ```bash
       docker compose up --build -d
    ```
