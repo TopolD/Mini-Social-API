@@ -1,4 +1,4 @@
-# Mini social-apieqqzz
+# Mini social-apie
 A Social api  where users can create posts and send likes for those  posts
 
 ---
